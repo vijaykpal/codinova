@@ -1,10 +1,28 @@
 import React, {Component} from 'react';
-import {View, FlatList, Text, StyleSheet} from 'react-native';
-import {Header, Icon, Card, Avatar} from 'react-native-elements';
-import {employeeArr} from '../dummayData';
+import {View, FlatList, Text, StyleSheet, AsyncStorage} from 'react-native';
+import {Header, Icon, Card, Avatar, Button} from 'react-native-elements';
 
 class EmployeeList extends Component{
+
+    constructor(props){
+        super(props);
+        this.state = {
+            employeeList: []
+        }
+    }
+
+    componentDidMount(){
+        const { navigation } = this.props,
+        empArr = navigation.getParam('empArr');
+        this.setState({employeeList: empArr})
+    }
+
+    clearStorage = async () => {
+        await AsyncStorage.setItem('employeeList', '');
+    };
+
     render(){
+        let {employeeList} = this.state;
         return (
             <View style = {{height: '100%', marginBottom: -10}}>
                 <Header
@@ -15,10 +33,9 @@ class EmployeeList extends Component{
                 backgroundColor= {'green'}
                 />
 
-                <FlatList data = {employeeArr} 
-                    keyExtractor = {item => item.empID}
+                <FlatList data = {employeeList} 
                     renderItem = {(item) => {
-                        let {item: {fName, lName, title}} = item;
+                        let {item:{fName, lName, jobTitle}} = item;
                         return(
                             <Card containerStyle={{padding: 0, height: 80, borderRadius: 3}}>
                                 <View style = {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: '100%', marginHorizontal: 10}}>
@@ -26,7 +43,7 @@ class EmployeeList extends Component{
                                         <Avatar rounded title="MD" />
                                         <View style={{marginLeft: 20}}>
                                         <Text>{fName} {lName}</Text>
-                                        <Text>{title}</Text>
+                                        <Text>{jobTitle}</Text>
                                         </View>
                                     </View>
                                     <Icon type='Entypo' name='star' color='yellow' />
@@ -34,6 +51,10 @@ class EmployeeList extends Component{
                             </Card>
                         )
                     }}
+                />
+                <Button
+                title="Clear Async Storage"
+                onPress = {() => this.clearStorage()}
                 />
             </View>
         )

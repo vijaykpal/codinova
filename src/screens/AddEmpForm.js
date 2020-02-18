@@ -1,19 +1,41 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, AsyncStorage} from 'react-native';
 import {InputWithLabel} from '../common/InputWithLabel';
 import {Button} from '../common/Button';
 
 class AddEmpForm extends Component{
+
+    constructor(props){
+        super(props);
+        this.state = {
+            fName: '',
+            lName: '',
+            jobTitle: '',
+            salary: ''
+        }
+    }
     
-    onChangeText = (text) => {
+    onChangeText = (text, field) => {
         //Todo handle text change
-        console.log("onChangeText : ", text);
+        console.log("onChangeText : ", text, field);
+        this.setState({[field]: text})
     };
 
-    onSave = () => {
+    onSave = async () => {
         //TODO save action
-        console.log("onSave : ");
-        this.props.navigation.navigate('EmployeeList');
+        let {fName, lName, jobTitle, salary} = this.state,
+        empList = [],
+        empObj = {
+            fName: fName,
+            lName: lName, 
+            jobTitle: jobTitle,
+            salary: salary
+        },
+        employees = await AsyncStorage.getItem('employeeList')
+        empList = employees ? JSON.parse(employees) : [];
+        empList.push(empObj);
+        await AsyncStorage.setItem('employeeList', JSON.stringify(empList));
+        this.props.navigation.navigate('EmployeeList', {empArr: empList});
     };
 
     render(){
@@ -25,16 +47,31 @@ class AddEmpForm extends Component{
                     </Text>
                 </View>
 
+                <ScrollView>
                 <View style = {{marginVertical: 20}}>
-                    <InputWithLabel label = {'First Name'} onChangeHandler = {this.onChangeText}/>
-                    <InputWithLabel label = {'Last Name'} onChangeHandler = {this.onChangeText}/>
-                    <InputWithLabel label = {'Job Title'} onChangeHandler = {this.onChangeText}/>
-                    <InputWithLabel label = {'Salary'} onChangeHandler = {this.onChangeText}/>
+                    <InputWithLabel 
+                        label = {'First Name'} 
+                        field = 'fName'
+                        onChangeHandler = {this.onChangeText} />
+                    <InputWithLabel 
+                        label = {'Last Name'} 
+                        field = 'lName'
+                        onChangeHandler = {this.onChangeText} />
+                    <InputWithLabel 
+                        label = {'Job Title'}
+                        field = 'jobTitle' 
+                        onChangeHandler = {this.onChangeText} />
+                    <InputWithLabel 
+                        label = {'Salary'} 
+                        field = 'salary'
+                        onChangeHandler = {this.onChangeText} 
+                        keyboardType = 'numeric' />
                 </View>
                 
                 <View style = {{flexDirection: 'row', justifyContent: 'center', marginVertical: 20}}>
                     <Button btnName = 'Save' btnHandler = {this.onSave} />
                 </View>
+                </ScrollView>
             </View>
         )
     }

@@ -2,12 +2,14 @@ import React from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
 
 export const InputWithLabel = (props) => {
-    let {label, onChangeHandler} = props;
+    let {label, field, onChangeHandler, keyboardType} = props;
     return(
         <View style = {styles.inputBox}>
             <Text>{label}</Text>
             <TextInput 
-                onChange = {text => onChangeHandler(text)}
+                autoCapitalize = 'words'
+                onChangeText = {(text) => onChangeHandler(text, field)}
+                keyboardType =  {keyboardType ? keyboardType : 'default'}
                 style = {styles.inputField} />
         </View>
     )
