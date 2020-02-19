@@ -1,12 +1,15 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, ActivityIndicator} from 'react-native';
 
 export const Button = (props) => {
-    let {btnName, btnHandler} = props;
+    let {btnName, btnHandler, isLoading = false} = props;
     return(
         <View style = {styles.container}>
             <TouchableOpacity onPress = {() => btnHandler()} style = {styles.addBtn}>
+                {
+                isLoading ? <ActivityIndicator size = 'large' color = '#fff' /> : 
                 <Text style = {styles.addEmpBtnText}>{btnName}</Text>
+                }
             </TouchableOpacity>
         </View>
     )

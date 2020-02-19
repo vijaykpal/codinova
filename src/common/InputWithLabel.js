@@ -5,7 +5,7 @@ export const InputWithLabel = (props) => {
     let {label, field, onChangeHandler, keyboardType} = props;
     return(
         <View style = {styles.inputBox}>
-            <Text>{label}</Text>
+            <Text style = {{fontSize: 18}}>{label}</Text>
             <TextInput 
                 autoCapitalize = 'words'
                 onChangeText = {(text) => onChangeHandler(text, field)}
@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     },
     inputField: {
         borderBottomWidth: 2,
-        borderBottomColor: 'green'
+        borderBottomColor: 'green',
+        fontSize: 16
     }
 })

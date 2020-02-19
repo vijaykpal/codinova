@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {View, Text, ScrollView, StyleSheet, AsyncStorage} from 'react-native';
 import {InputWithLabel} from '../common/InputWithLabel';
 import {Button} from '../common/Button';
+import {getInitials, checkRequiredFields} from '../utils';
+const uuidv4 = require('uuid/v4');
 
 class AddEmpForm extends Component{
 
@@ -11,34 +13,47 @@ class AddEmpForm extends Component{
             fName: '',
             lName: '',
             jobTitle: '',
-            salary: ''
+            salary: '',
+            isEmpty: false,
+            saving: false
         }
     }
     
     onChangeText = (text, field) => {
-        //Todo handle text change
-        console.log("onChangeText : ", text, field);
-        this.setState({[field]: text})
+        this.setState({[field]: text, isEmpty: false})
     };
 
     onSave = async () => {
-        //TODO save action
         let {fName, lName, jobTitle, salary} = this.state,
-        empList = [],
-        empObj = {
-            fName: fName,
-            lName: lName, 
-            jobTitle: jobTitle,
-            salary: salary
-        },
-        employees = await AsyncStorage.getItem('employeeList')
-        empList = employees ? JSON.parse(employees) : [];
-        empList.push(empObj);
-        await AsyncStorage.setItem('employeeList', JSON.stringify(empList));
-        this.props.navigation.navigate('EmployeeList', {empArr: empList});
+        isEmpty = checkRequiredFields(fName, lName, jobTitle, salary);
+        if(!isEmpty){
+            this.setState({saving: true})
+            let initial = getInitials(fName, lName);
+            empList = [],
+            empObj = {
+                fName: fName,
+                lName: lName, 
+                jobTitle: jobTitle,
+                salary: salary,
+                initial: initial,
+                isFav: false,
+                empID: uuidv4()
+            },
+            employees = await AsyncStorage.getItem('employeeList')
+            empList = employees ? JSON.parse(employees) : [];
+            empList.push(empObj);
+            await AsyncStorage.setItem('employeeList', JSON.stringify(empList));
+            this.setState({isEmpty: false})
+            this.props.navigation.replace('EmployeeList', {empArr: empList});
+        }
+        else{
+            this.setState({isEmpty: true})
+        }
+
     };
 
     render(){
+        let {isEmpty, saving} = this.state;
         return(
             <View style = {styles.container}>
                 <View style = {{flexDirection: 'row', justifyContent: 'center', marginVertical: 30}}>
@@ -66,10 +81,12 @@ class AddEmpForm extends Component{
                         field = 'salary'
                         onChangeHandler = {this.onChangeText} 
                         keyboardType = 'numeric' />
+
+                    {isEmpty ? <Text style = {{color: 'red',marginLeft: 60}}>Please fill all the details..!!</Text> : null}
                 </View>
                 
                 <View style = {{flexDirection: 'row', justifyContent: 'center', marginVertical: 20}}>
-                    <Button btnName = 'Save' btnHandler = {this.onSave} />
+                    <Button btnName = 'Save' btnHandler = {this.onSave} isLoading = {saving} />
                 </View>
                 </ScrollView>
             </View>

@@ -1,19 +1,15 @@
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-import {NoEmployee} from './src/screens/NoEmployee';
-import AddEmpForm from './src/screens/AddEmpForm';
-import EmployeeList from './src/screens/EmployeeList';
+import React from 'react';
+import Route from './src/Route';
+import {Provider} from 'react-redux';
+import {store} from './src/redux/ReduxStore';
 
-const AppNavigator = createStackNavigator(
-  {
-    NoEmployee: NoEmployee,
-    AddEmpForm: AddEmpForm,
-    EmployeeList: EmployeeList
-  },
-  {
-    initialRouteName: 'NoEmployee',
-  }
-);
+const App = () => {
+  console.disableYellowBox = true;
+  return (
+    <Provider store = {store}>
+      <Route />
+    </Provider>
+    )
+};
 
-export default createAppContainer(AppNavigator);
-
+export default App;

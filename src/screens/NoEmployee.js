@@ -5,10 +5,7 @@ import {View,
 import {Button} from '../common/Button';
 
 export const NoEmployee = (props) => {
-    console.log("navigateToAddEmpForm...");
     navigateToAddEmpForm = () => {
-        //TODO navigation to form
-        console.log("navigateToAddEmpForm");
         props.navigation.navigate('AddEmpForm')
     };
 
